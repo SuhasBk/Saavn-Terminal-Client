@@ -179,7 +179,7 @@ def handler():
 
             length = len(l)
             if len(l) > 5:
-                length = int(len(l)*0.50)   #  show only 60% of results
+                length = int(len(l)*0.50)   #  show only 50% of results
 
             for i,t,u in zip(range(length),titles,urls):
                 print(i,t.upper(),' YouTube URL : ',u)
