@@ -39,7 +39,7 @@ except KeyboardInterrupt:
 def debug():
     while(True):
         try:
-            cmd=input("Enter the commands BOSS!\n")
+            cmd=input("Enter the debugging commands...\n")
             if cmd=='exit':
                 return
             exec(cmd)
