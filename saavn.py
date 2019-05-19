@@ -14,30 +14,26 @@ rep = 0
 
 #  Start working in background while waiting for user input
 def initialize():
-    print('Welcome To Saavn Terminal Client!')
-    global b
-    if len(sys.argv)>1:
-        b = webdriver.Firefox()
-    else:
-        opt=Options()
-        opt.headless=True
-        b = webdriver.Firefox(options=opt)
+    try:
+        print('Welcome To Saavn Terminal Client!')
+        global b
+        if len(sys.argv)>1:
+            b = webdriver.Firefox()
+        else:
+            opt=Options()
+            opt.headless=True
+            b = webdriver.Firefox(options=opt)
+    except:
+        exit('\n')
+
 init = Thread(target=initialize)
 init.start()
-
 #  entry message and user input
 try:
     song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
-    print("Connecting to Saavn...\n")
+    print("Connecting to Savn...\n")
 except KeyboardInterrupt:
-    exit('\n')
-finally:
-    try:
-        b.quit()
-        os.remove('geckodriver.log')
-        exit("Thank you for using this software")
-    except:
-        pass
+    exit('\nConnection aborted\n')
 
 # backdoor entry for debugging purposes
 def debug():
@@ -156,11 +152,6 @@ def handler():
         def share():
             share = b.find_elements_by_class_name('outline')[3]
             b.execute_script("arguments[0].click();",share)
-            '''try:
-                share.click()
-            except:
-                b.find_element_by_tag_name('html').send_keys(Keys.ESCAPE)
-                share.click()'''
             inp = b.find_elements_by_tag_name('input')
             link = inp[len(inp)-1].get_attribute("value")
             print("Share this link or scan the QR code :- {}".format(link))
@@ -263,7 +254,7 @@ def navigate(song_name):
         b.find_element_by_class_name('play').click()
     else:
         try:
-            print("\nSearching for "+' '.join(song_name.split('+')))
+            print("\nSearching for "+' '.join(song_name.split('+'))+'...')
             b.get('http://jiosaavn.com/search/{}'.format(song_name))
         except:
             b.quit()
