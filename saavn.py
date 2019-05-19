@@ -14,7 +14,7 @@ rep = 0
 
 #  Start working in background while waiting for user input
 def initialize():
-    print("Connecting to Saavn...\n")
+    print('Welcome To Saavn Terminal Client!')
     global b
     if len(sys.argv)>1:
         b = webdriver.Firefox()
@@ -26,8 +26,18 @@ init = Thread(target=initialize)
 init.start()
 
 #  entry message and user input
-print('Welcome To Saavn Terminal Client!')
-song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
+try:
+    song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
+    print("Connecting to Saavn...\n")
+except KeyboardInterrupt:
+    exit('\n')
+finally:
+    try:
+        b.quit()
+        os.remove('geckodriver.log')
+        exit("Thank you for using this software")
+    except:
+        pass
 
 # backdoor entry for debugging purposes
 def debug():
