@@ -100,15 +100,15 @@ def handler():
 
         def repeat():
             global rep
-            butt = b.find_element_by_id('repeat')
+            button = b.find_element_by_id('repeat')
             if rep==0:
                 rep=1
-                b.execute_script('arguments[0].click();',butt)
+                b.execute_script('arguments[0].click();',button)
                 print('\nRepeat mode ON\n')
             elif rep==1:
                 rep=0
                 for i in range(0,2):
-                    b.execute_script('arguments[0].click();',butt)
+                    b.execute_script('arguments[0].click();',button)
                 print('\nRepeat mode OFF\n')
             return
 
