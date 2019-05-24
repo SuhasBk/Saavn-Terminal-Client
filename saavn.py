@@ -282,8 +282,8 @@ def navigate(song_name):
             exit('Oops! No results found!')
 
         # remove ad in between songs:
-        ad = browser.find_element_by_id('ad-drawer')
-        browser.execute_script("arguments[0].remove();",ad)
+        #ad = browser.find_element_by_id('ad-drawer')
+        #browser.execute_script("arguments[0].remove();",ad)
 
         for i,j,k in zip(list(range(len(titles))),titles,meta):
                 print(i,j.text,' : ',k.text)
