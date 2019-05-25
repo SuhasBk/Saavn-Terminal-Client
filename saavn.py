@@ -26,26 +26,12 @@ def initialize():
     except:
         exit('\n')
 
-init = Thread(target=initialize)
-init.start()
-#  entry message and user input
-try:
-    song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
-    print("Connecting to Saavn...\n")
-except KeyboardInterrupt:
-    try:
-        browser.quit()
-        os.remove('geckodriver.log')
-    except:
-        pass
-    exit('\nConnection aborted\n')
-
 # backdoor entry for debugging purposes
 def debug():
     while(True):
         try:
             cmd=input("Enter the debugging commands...\n")
-            if cmd=='exit':
+            if cmd=='exit' or cmd=='':
                 return
             exec(cmd)
         except:
@@ -305,6 +291,19 @@ def navigate(song_name):
     handler()
 
 try:
+    init = Thread(target=initialize)
+    init.start()
+    #  entry message and user input
+    try:
+        song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
+        print("Connecting to Saavn...\n")
+    except KeyboardInterrupt:
+        try:
+            browser.quit()
+            os.remove('geckodriver.log')
+        except:
+            pass
+        exit('\nConnection aborted\n')
     navigate(song_name)
 finally:
     try:
