@@ -41,6 +41,7 @@ def debug():
 # browser control
 def handler():
     try:
+        browser.execute_script("Player.setBitrate({});".format(128))
         def lang():
             browser.execute_script("Header.changeLanguage('{}');".format(input("Enter language preference..\n").lower()))
             return
@@ -193,10 +194,6 @@ def handler():
             print("Successfully Downloaded {}".format(search_term))
             return
 
-        def set_bitrate(rate):
-            browser.execute_script("Player.setBitrate({});".format(rate))
-            return
-
         def cya():
             exit('Stopping playback...Closing Saavn...')
 
@@ -208,7 +205,6 @@ def handler():
 
         while True:
             time.sleep(0.5)
-            set_bitrate(128)
             print("\nTrack name : "+browser.find_element_by_id('player-track-name').text+' from the album - '+browser.find_element_by_id('player-album-name').text+'\n')
 
             ch = input("\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Song Info\n'6' : Top Songs This Week (based on language preference)\n'7' : Repeat Current Song\n'8' : Lyrics for Current Song\n'9' : Change Language (current language : {0})\n'10' : Share this song...\n'11' : Download current song... (requires 'youtube-dl')\n'12' : Close Saavn...\n\nEnter your choice...\n> ".format(browser.find_element_by_id('language').text))
@@ -287,7 +283,10 @@ def navigate(song_name):
 
         time.sleep(3)
         song = browser.find_element_by_class_name('play')
-        browser.execute_script('arguments[0].click();',song)
+        try:
+            song.click()
+        except:
+            browser.execute_script('arguments[0].click();',song)
     handler()
 
 try:
