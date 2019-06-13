@@ -296,7 +296,7 @@ try:
     try:
         song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
         print("Connecting to Saavn...\n")
-    except KeyboardInterrupt:
+    except:
         try:
             browser.quit()
             os.remove('geckodriver.log')
