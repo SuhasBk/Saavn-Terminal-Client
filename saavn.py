@@ -2,13 +2,13 @@
 from threading import Thread
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 import selenium,time,string,sys,os,re,random,requests,qrcode
 from bs4 import BeautifulSoup
 from subprocess import run,PIPE
 
 # global variables
-browser = 0
+browser = None
 pause = 0
 rep = 0
 
@@ -18,13 +18,13 @@ def initialize():
         print('Welcome To Saavn Terminal Client!')
         global browser
         if len(sys.argv)>1:
-            browser = webdriver.Firefox()
+            browser = webdriver.Chrome()
         else:
             opt=Options()
             opt.headless=True
-            browser = webdriver.Firefox(options=opt)
+            browser = webdriver.Chrome(options=opt)
     except:
-        exit('\n')
+        exit("\nSomething's fishy...")
 
 # backdoor entry for debugging purposes
 def debug():
@@ -289,25 +289,24 @@ def navigate(song_name):
             browser.execute_script('arguments[0].click();',song)
     handler()
 
-try:
-    init = Thread(target=initialize)
-    init.start()
-    #  entry message and user input
+if __name__ == '__main__':
     try:
-        song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
-        print("Connecting to Saavn...\n")
-    except:
+        init = Thread(target=initialize)
+        init.start()
+        #  entry message and user input
+        try:
+            song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
+            print("Connecting to Saavn...\n")
+        except:
+            try:
+                browser.quit()
+            except:
+                pass
+            exit('\nConnection aborted\n')
+        navigate(song_name)
+    finally:
         try:
             browser.quit()
-            os.remove('geckodriver.log')
+            exit("Thank you for using this software")
         except:
             pass
-        exit('\nConnection aborted\n')
-    navigate(song_name)
-finally:
-    try:
-        browser.quit()
-        os.remove('geckodriver.log')
-        exit("Thank you for using this software")
-    except:
-        pass
