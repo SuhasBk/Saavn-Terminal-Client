@@ -2,7 +2,8 @@
 from threading import Thread
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChrOptions
+from selenium.webdriver.firefox.options import Options as FireOptions
 import selenium,time,string,sys,os,re,random,requests,qrcode
 from bs4 import BeautifulSoup
 from subprocess import run,PIPE
@@ -19,10 +20,13 @@ def initialize():
         global browser
         if len(sys.argv)>1:
             browser = webdriver.Chrome()
+            #browser = webdriver.Firefox()
         else:
-            opt=Options()
+            #opt = FireOptions()
+            opt = ChrOptions()
             opt.headless=True
             browser = webdriver.Chrome(options=opt)
+            #browser = webdriver.Firefox(options=opt)
     except:
         exit("\nSomething's fishy...")
 
@@ -300,6 +304,7 @@ if __name__ == '__main__':
         except:
             try:
                 browser.quit()
+                os.remove('geckodriver.log')
             except:
                 pass
             exit('\nConnection aborted\n')
@@ -307,6 +312,7 @@ if __name__ == '__main__':
     finally:
         try:
             browser.quit()
+            os.remove('geckodriver.log')
             exit("Thank you for using this software")
         except:
             pass
