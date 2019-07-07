@@ -19,14 +19,14 @@ def initialize():
         print('Welcome To Saavn Terminal Client!')
         global browser
         if len(sys.argv)>1:
-            browser = webdriver.Chrome()
-            #browser = webdriver.Firefox()
+            #browser = webdriver.Chrome()
+            browser = webdriver.Firefox()
         else:
-            #opt = FireOptions()
-            opt = ChrOptions()
+            opt = FireOptions()
+            #opt = ChrOptions()
             opt.headless=True
-            browser = webdriver.Chrome(options=opt)
-            #browser = webdriver.Firefox(options=opt)
+            #browser = webdriver.Chrome(options=opt)
+            browser = webdriver.Firefox(options=opt)
     except:
         exit("\nSomething's fishy...")
 
