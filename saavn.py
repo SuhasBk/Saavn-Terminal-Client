@@ -45,7 +45,8 @@ def debug():
 # browser control
 def handler():
     try:
-        browser.execute_script("Player.setBitrate({});".format(128))
+        browser.execute_script("Player.setBitrate(128)")
+        browser.execute_script("Player.setVolume(100)")
         def lang():
             browser.execute_script("Header.changeLanguage('{}');".format(input("Enter language preference..\n").lower()))
             return
