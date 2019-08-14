@@ -17,18 +17,21 @@ rep = 0
 def initialize():
     try:
         print('Welcome To Saavn Terminal Client!')
-        global browser
-        if len(sys.argv)>1:
-            #browser = webdriver.Chrome()
+        global browser          # Uncomment respective lines to shift between Chrome and Firefox
+
+        opt = FireOptions()
+        #opt = ChrOptions()
+        opt.headless=True
+
+        if len(sys.argv)>1:     # See the magic unfold in front of your eyes ( for debugging purposes ):
             browser = webdriver.Firefox()
-        else:
-            opt = FireOptions()
-            #opt = ChrOptions()
-            opt.headless=True
+            #browser = webdriver.Chrome()
+
+        else:                   # Or just sit back and relax ( recommended )
             #browser = webdriver.Chrome(options=opt)
             browser = webdriver.Firefox(options=opt)
     except:
-        exit("\nSomething's fishy...")
+        exit("\nSomething is not right... Please check all dependencies.")
 
 # backdoor entry for debugging purposes
 def debug():
@@ -39,13 +42,13 @@ def debug():
                 return
             exec(cmd)
         except:
-            print('NOT WORKING!')
+            print('\nBAD CODE\n')
             pass
 
 # browser control
 def handler():
     try:
-        browser.execute_script("Player.setBitrate({});".format(128))
+        browser.execute_script("Player.setBitrate({});".format(128))        # Highest quality ;)
         def lang():
             browser.execute_script("Header.changeLanguage('{}');".format(input("Enter language preference..\n").lower()))
             return
@@ -108,20 +111,27 @@ def handler():
                 print('\nRepeat mode OFF\n')
             return
 
-        def lyrics(name):
+        def lyrics():
+            name = browser.find_element_by_id('player-track-name').text
+
+            if input("The current search paramter is '{}'. Do you want to continue ('n') or refine it? ('y')\n> ".format(name)) == 'y':
+                name = input("Enter the search term...\n> ")
+                print("Okay... Searching for {}...".format(name))
+            else:
+                print("Searching for {}...".format(name))
+
             r=requests.get("https://search.azlyrics.com/search.php?q="+'+'.join(name.split()),headers={'User-Agent':'MyApp'})
             s=BeautifulSoup(r.text,'html.parser')
             td=s.findAll('td',attrs={'class':'text-left visitedlyr'})
             res=[]
 
             if len(td) == 0:
-                custom = input("No results found for this...Want to try again with user-defined search? (y)\n")
+                custom = input("No results found for this...Want to try again? (y)\n")
                 if custom =='y':
-                    lyrics(input("\nOkay... Enter the user-defined song name...\n"))
-                    return
+                    lyrics()
                 else:
                     print('\nOkay... returning to main menu...\n')
-                    return
+                return
 
             for i,j in enumerate(td):
                 s=re.findall(r'<b>.*</b>',str(j))[0]
@@ -198,6 +208,36 @@ def handler():
             print("Successfully Downloaded {}".format(search_term))
             return
 
+        def seek():
+            try:
+                max_time = browser.find_element_by_id('track-time').text
+                curr_time = browser.find_element_by_id('track-elapsed').text
+
+                user_time = input("\nThe total duration of the track is : {}.\nThe current duration of the track is : {}. ( enter 'r' to refresh )\nEnter the new time in '[mm:ss]' format :\n> ".format(max_time,curr_time))
+
+                if 'r' in user_time.lower():
+                    seek()
+
+                try:
+                    total = list(map(int,max_time.split(':')))
+                    time = list(map(int,user_time.split(':')))
+                except:
+                    raise AttributeError
+
+                if time[0] > total[0] or (time[0] == total[0] and time[1] > total[1]):
+                    raise AttributeError
+
+                total_in_secs = 60 * total[0] + total[1]
+                time_in_secs = 60 * time[0] + time[1]
+
+                per = time_in_secs / total_in_secs * 100
+
+                browser.execute_script('Player.seekSong({})'.format(per))
+                print('Song successfully seeked at '+user_time+"!\n")
+            except AttributeError:
+                print("\nWrong time or time format.. Try again...")
+                return
+
         def cya():
             exit('Stopping playback...Closing Saavn...')
 
@@ -205,27 +245,16 @@ def handler():
             print('Wrong Choice!\n')
             return
 
-        routes = {'1':new,'2':next,'3':play_pause,'4':prev,'5':info,'6':top,'7':repeat,'8':lyrics,'9':lang,'10':share,'11':download,'13':debug,'12':cya,'default':default}
+        routes = {'1':new,'2':next,'3':play_pause,'4':prev,'5' : seek,'6':info,'7':top,'8':repeat,'9':lyrics,'10':lang,'11':share,'12':download,'13':cya,'14':debug,'default':default}
 
         while True:
             time.sleep(0.5)
             print("\nTrack name : "+browser.find_element_by_id('player-track-name').text+' from the album - '+browser.find_element_by_id('player-album-name').text+'\n')
 
-            ch = input("\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Song Info\n'6' : Top Songs This Week (based on language preference)\n'7' : Repeat Current Song\n'8' : Lyrics for Current Song\n'9' : Change Language (current language : {0})\n'10' : Share this song...\n'11' : Download current song... (requires 'youtube-dl')\n'12' : Close Saavn...\n\nEnter your choice...\n> ".format(browser.find_element_by_id('language').text))
+            ch = input("\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Top Songs This Week (based on language preference)\n'8' : Repeat Current Song\n'9' : Lyrics for Current Song\n'10' : Change Language (current language : {0})\n'11' : Share this song...\n'12' : Download current song... (requires updated 'youtube-dl')\n'13' : Close Saavn...\n\nEnter your choice...\n> ".format(browser.find_element_by_id('language').text))
 
             if ch in routes:
-                if ch == '8':
-                    name = browser.find_element_by_id('player-track-name').text
-
-                    if input("The current search paramter is '{}'. Do you want to continue ('n') or refine it? ('y')\n> ".format(name)) == 'y':
-                        name = input("Enter the search term...\n> ")
-                        print("Okay... Searching for {}...".format(name))
-                    else:
-                        print("Searching for {}...".format(name))
-
-                    routes[ch](name)
-                else:
-                    routes[ch]()
+                routes[ch]()
             else:
                 routes['default']()
 
