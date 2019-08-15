@@ -14,7 +14,7 @@ sudo mv gecko* /usr/local/bin/;
 
 echo -e '\nCool! Everything is ready now... Do you want to automatically install requirements using *pip* as well?\n'
 read ans
-if [ $ans == "y" ]||[ $ans == 'Y' ];
+if [ $ans == "y" ]||[ $ans == 'Y' ]
 then
     python3 -m pip install --user -r requirements.txt;
 else
