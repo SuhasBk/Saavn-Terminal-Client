@@ -13,23 +13,29 @@ browser = None
 pause = 0
 rep = 0
 
+def choose_browser(default=True):
+    global browser
+    if default:
+        opt = FireOptions()
+        opt.headless = True
+        if len(sys.argv) > 1:
+            browser = webdriver.Firefox()
+        else:
+            browser = webdriver.Firefox(options=opt)
+    else:
+        opt = ChrOptions()
+        opt.headless=True
+        if len(sys.argv)>1:
+            browser = webdriver.Chrome()
+        else:
+            browser = webdriver.Chrome(options=opt)
+
 #  Start working in background while waiting for user input
 def initialize():
     try:
         print('Welcome To Saavn Terminal Client!')
-        global browser          # Uncomment respective lines to shift between Chrome and Firefox
-
-        opt = FireOptions()
-        #opt = ChrOptions()
-        opt.headless=True
-
-        if len(sys.argv)>1:     # See the magic unfold in front of your eyes ( for debugging purposes ):
-            browser = webdriver.Firefox()
-            #browser = webdriver.Chrome()
-
-        else:                   # Or just sit back and relax ( recommended )
-            #browser = webdriver.Chrome(options=opt)
-            browser = webdriver.Firefox(options=opt)
+        default = True                  # Toggle to False to use chrome browser
+        choose_browser(default)
     except:
         exit("\nSomething is not right... Please check all dependencies.")
 
