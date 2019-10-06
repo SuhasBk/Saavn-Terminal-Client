@@ -14,30 +14,36 @@ pause = 0
 rep = 0
 
 def choose_browser(default=True):
-    global browser
-    if default:
-        opt = FireOptions()
-        opt.headless = True
-        if len(sys.argv) > 1:
-            browser = webdriver.Firefox()
+    try:
+        global browser
+        if default:
+            opt = FireOptions()
+            opt.headless = True
+            if len(sys.argv) > 2:
+                browser = webdriver.Firefox()
+            else:
+                browser = webdriver.Firefox(options=opt)
         else:
-            browser = webdriver.Firefox(options=opt)
-    else:
-        opt = ChrOptions()
-        opt.headless=True
-        if len(sys.argv)>1:
-            browser = webdriver.Chrome()
-        else:
-            browser = webdriver.Chrome(options=opt)
+            opt = ChrOptions()
+            opt.headless=True
+            if len(sys.argv) > 2:
+                browser = webdriver.Chrome()
+            else:
+                browser = webdriver.Chrome(options=opt)
+    except:
+        exit("\nSomething is not right... Please check all dependencies.")
 
 #  Start working in background while waiting for user input
 def initialize():
+    print('Welcome To Saavn Terminal Client!')
+    default = True
     try:
-        print('Welcome To Saavn Terminal Client!')
-        default = True                  # Toggle to False to use chrome browser
-        choose_browser(default)
-    except:
-        exit("\nSomething is not right... Please check all dependencies.")
+        if sys.argv[1] == 'chrome':
+            default = False         # Toggle to False to use chrome browser
+    except IndexError:
+        default = True
+    choose_browser(default)
+
 
 # backdoor entry for debugging purposes
 def debug():
