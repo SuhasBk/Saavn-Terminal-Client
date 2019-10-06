@@ -168,8 +168,11 @@ def handler():
             return
 
         def share():
-            share = browser.find_elements_by_class_name('outline')[3]
+            share = browser.find_element_by_id('now-playing-extras')
+            song = share.find_element_by_id('player-share')
             browser.execute_script("arguments[0].click();",share)
+            browser.execute_script("arguments[0].click();",song)
+
             inp = browser.find_elements_by_tag_name('input')
             link = inp[len(inp)-1].get_attribute("value")
             print("Share this link or scan the QR code :- {}".format(link))
