@@ -36,10 +36,10 @@ def choose_browser(default=True):
 #  Start working in background while waiting for user input
 def initialize():
     print('Welcome To Saavn Terminal Client!')
-    default = True
+    default = True                      # Toggle to False to use chrome browser
     try:
         if sys.argv[1] == 'chrome':
-            default = False         # Toggle to False to use chrome browser
+            default = False
     except IndexError:
         default = True
     choose_browser(default)
@@ -60,7 +60,7 @@ def debug():
 # browser control
 def handler():
     try:
-        browser.execute_script("Player.setBitrate({});".format(128))        # Highest quality ;)
+        browser.execute_script(f"Player.setBitrate({128});")        # Highest quality ;)
         def lang():
             browser.execute_script("Header.changeLanguage('{}');".format(input("Enter language preference..\n").lower()))
             return
@@ -266,7 +266,7 @@ def handler():
             time.sleep(0.5)
             print("\nTrack name : "+browser.find_element_by_id('player-track-name').text+' from the album - '+browser.find_element_by_id('player-album-name').text+'\n')
 
-            ch = input("\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Top Songs This Week (based on language preference)\n'8' : Repeat Current Song\n'9' : Lyrics for Current Song\n'10' : Change Language (current language : {0})\n'11' : Share this song...\n'12' : Download current song... (requires updated 'youtube-dl')\n'13' : Close Saavn...\n\nEnter your choice...\n> ".format(browser.find_element_by_id('language').text))
+            ch = input(f"\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Top Songs This Week (based on language preference)\n'8' : Repeat Current Song\n'9' : Lyrics for Current Song\n'10' : Change Language (current language : {browser.find_element_by_id('language').text})\n'11' : Share this song...\n'12' : Download current song... (requires updated 'youtube-dl')\n'13' : Close Saavn...\n\nEnter your choice...\n> ")
 
             if ch in routes:
                 routes[ch]()
@@ -308,7 +308,6 @@ def navigate(song_name):
         # browser.execute_script("arguments[0].click()",random.choice(titles).find_element_by_tag_name('a'))
 
         if len(titles) < 1:
-            browser.quit()
             exit('Oops! No results found!')
 
         # remove ad in between songs:
@@ -345,14 +344,9 @@ if __name__ == '__main__':
         try:
             song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
             print("Connecting to Saavn...\n")
+            navigate(song_name)
         except:
-            try:
-                browser.quit()
-                os.remove('geckodriver.log')
-            except:
-                pass
             exit('\nConnection aborted\n')
-        navigate(song_name)
     finally:
         try:
             browser.quit()
