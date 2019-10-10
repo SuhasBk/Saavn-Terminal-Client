@@ -247,7 +247,7 @@ def handler():
 
                 per = time_in_secs / total_in_secs * 100
 
-                browser.execute_script('Player.seekSong({})'.format(per))
+                browser.execute_script(f'Player.seekSong({per})')
                 print('Song successfully seeked at '+user_time+"!\n")
             except AttributeError:
                 print("\nWrong time or time format.. Try again...")
