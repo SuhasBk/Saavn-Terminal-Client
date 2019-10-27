@@ -346,7 +346,7 @@ if __name__ == '__main__':
             print("Connecting to Saavn...\n")
             navigate(song_name)
         except:
-            exit('\nConnection aborted\n')
+            exit('\nConnection aborted\nTry again...')
     finally:
         try:
             browser.quit()
