@@ -41,7 +41,7 @@ def initialize():
         if sys.argv[1] == 'chrome':
             default = False
     except IndexError:
-        default = True
+        pass
     choose_browser(default)
 
 
@@ -308,7 +308,8 @@ def navigate(song_name):
         # browser.execute_script("arguments[0].click()",random.choice(titles).find_element_by_tag_name('a'))
 
         if len(titles) < 1:
-            exit('Oops! No results found!')
+            print('Oops! No results found!')
+            return
 
         # remove ad in between songs:
         #ad = browser.find_element_by_id('ad-drawer')
@@ -341,16 +342,13 @@ if __name__ == '__main__':
         init = Thread(target=initialize)
         init.start()
         #  entry message and user input
-        try:
-            song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
-            print("Connecting to Saavn...\n")
-            navigate(song_name)
-        except:
-            exit('\nConnection aborted\nTry again...')
+        song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
+        print("\n\aConnecting to Saavn...\n")
+        navigate(song_name)
     finally:
+        browser.quit()
         try:
-            browser.quit()
             os.remove('geckodriver.log')
-            exit("Thank you for using this software")
         except:
             pass
+        exit("Thank you for using this software")
