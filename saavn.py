@@ -14,39 +14,6 @@ browser = None
 pause = 0
 rep = 0
 
-def choose_browser(default=True):
-    global browser
-    dir = os.path.dirname(os.path.realpath(__file__))
-    if default:
-        if sys.platform == 'linux':
-            path = os.path.join(dir,'drivers','geckodriver')
-        else:
-            path = os.path.join(dir,'drivers','geckodriver.exe')
-        opt = FireOptions()
-        opt.headless = True
-        try:
-            if sys.argv[2] == 'debug' or sys.argv[1] == 'debug':
-                browser = webdriver.Firefox(executable_path=path,timeout=60,service_log_path=None)
-            else:
-                raise IndexError
-        except IndexErrori:
-            browser = webdriver.Firefox(executable_path=path,service_log_path=None,timeout=60,options=opt)
-    else:
-        if sys.platform == 'linux':
-            path = os.path.join(dir,'drivers','chromedriver')
-        else:
-            path = os.path.join(dir,'drivers','chromedriver.exe')
-        opt = ChrOptions()
-        opt.headless=True
-        try:
-            if sys.argv[2] == 'debug' or sys.argv[1] == 'debug':
-                browser = webdriver.Chrome(executable_path=path)
-            else:
-                raise IndexError
-        except IndexError:
-            browser = webdriver.Chrome(executable_path=path,options=opt)
-    return True
-
 #  Start working in background while waiting for user input
 def initialize():
     print('Welcome To Saavn Terminal Client!')
@@ -56,9 +23,9 @@ def initialize():
     dir = os.path.dirname(os.path.realpath(__file__))
     if b=='firefox':
         if sys.platform == 'linux':
-            path = os.path.join(dir,'drivers','geckodriver')
+            path = os.path.join(dir,'drivers','linux','geckodriver')
         else:
-            path = os.path.join(dir,'drivers','geckodriver.exe')
+            path = os.path.join(dir,'drivers','windows','geckodriver.exe')
         opt = FireOptions()
         opt.headless = True
         try:
@@ -70,9 +37,9 @@ def initialize():
             browser = webdriver.Firefox(executable_path=path,options=opt)
     else:
         if sys.platform == 'linux':
-            path = os.path.join(dir,'drivers','chromedriver')
+            path = os.path.join(dir,'drivers','linux','chromedriver')
         else:
-            path = os.path.join(dir,'drivers','chromedriver.exe')
+            path = os.path.join(dir,'drivers','windows','chromedriver.exe')
         opt = ChrOptions()
         opt.headless=True
         try:
