@@ -378,8 +378,12 @@ def navigate(song_name):
 if __name__ == '__main__':
     try:
         if len(sys.argv) < 3 :
-            print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
-            exit()
+            if os.environ['COMPUTERNAME'] == 'MIDDLEEARTH':
+                sys.argv.append('firefox')
+                sys.argv.append('off')
+            else:
+                print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
+                exit()
         init = Thread(target=initialize)
         init.start()
         #  entry message and user input
