@@ -15,7 +15,6 @@ pause = 0
 rep = 0
 
 def choose_browser(default=True):
-    #try:
     global browser
     dir = os.path.dirname(os.path.realpath(__file__))
     if default:
@@ -27,11 +26,11 @@ def choose_browser(default=True):
         opt.headless = True
         try:
             if sys.argv[2] == 'debug' or sys.argv[1] == 'debug':
-                browser = webdriver.Firefox(executable_path=path)
+                browser = webdriver.Firefox(executable_path=path,timeout=60,service_log_path=None)
             else:
                 raise IndexError
-        except IndexError:
-            browser = webdriver.Firefox(executable_path=path,options=opt)
+        except IndexErrori:
+            browser = webdriver.Firefox(executable_path=path,service_log_path=None,timeout=60,options=opt)
     else:
         if sys.platform == 'linux':
             path = os.path.join(dir,'drivers','chromedriver')
@@ -47,22 +46,42 @@ def choose_browser(default=True):
         except IndexError:
             browser = webdriver.Chrome(executable_path=path,options=opt)
     return True
-    '''except:
-        print("\nSomething is not right... Please check all dependencies.")
-        return False'''
 
 #  Start working in background while waiting for user input
 def initialize():
     print('Welcome To Saavn Terminal Client!')
-    default = True                      # Toggle to False to use chrome browser
-    try:
-        if sys.argv[1] == 'chrome':
-            default = False
-    except IndexError:
-        pass
-    if not choose_browser(default):
-        exit()
-
+    b = sys.argv[1]
+    d = sys.argv[2]
+    global browser
+    dir = os.path.dirname(os.path.realpath(__file__))
+    if b=='firefox':
+        if sys.platform == 'linux':
+            path = os.path.join(dir,'drivers','geckodriver')
+        else:
+            path = os.path.join(dir,'drivers','geckodriver.exe')
+        opt = FireOptions()
+        opt.headless = True
+        try:
+            if d=='on':
+                browser = webdriver.Firefox(executable_path=path)
+            else:
+                raise IndexError
+        except IndexError:
+            browser = webdriver.Firefox(executable_path=path,options=opt)
+    else:
+        if sys.platform == 'linux':
+            path = os.path.join(dir,'drivers','chromedriver')
+        else:
+            path = os.path.join(dir,'drivers','chromedriver.exe')
+        opt = ChrOptions()
+        opt.headless=True
+        try:
+            if d=='on':
+                browser = webdriver.Chrome(executable_path=path)
+            else:
+                raise IndexError
+        except IndexError:
+            browser = webdriver.Chrome(executable_path=path,options=opt)
 
 # backdoor entry for debugging purposes
 def debug():
@@ -358,6 +377,9 @@ def navigate(song_name):
 
 if __name__ == '__main__':
     try:
+        if len(sys.argv) < 3 :
+            print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
+            exit()
         init = Thread(target=initialize)
         init.start()
         #  entry message and user input
@@ -365,8 +387,8 @@ if __name__ == '__main__':
         print("\n\aConnecting to Saavn...\n")
         navigate(song_name)
     finally:
-        browser.quit()
         try:
+            browser.quit()
             os.remove('geckodriver.log')
         except:
             pass
