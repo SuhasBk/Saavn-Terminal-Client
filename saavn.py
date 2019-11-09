@@ -7,6 +7,7 @@ from selenium.webdriver.firefox.options import Options as FireOptions
 import selenium,time,string,sys,os,re,random,requests,qrcode
 from bs4 import BeautifulSoup
 from subprocess import run,PIPE
+import os,sys
 
 # global variables
 browser = None
@@ -14,24 +15,41 @@ pause = 0
 rep = 0
 
 def choose_browser(default=True):
-    try:
-        global browser
-        if default:
-            opt = FireOptions()
-            opt.headless = True
-            if len(sys.argv) > 2:
-                browser = webdriver.Firefox()
-            else:
-                browser = webdriver.Firefox(options=opt)
+    #try:
+    global browser
+    dir = os.path.dirname(os.path.realpath(__file__))
+    if default:
+        if sys.platform == 'linux':
+            path = os.path.join(dir,'drivers','geckodriver')
         else:
-            opt = ChrOptions()
-            opt.headless=True
-            if len(sys.argv) > 2:
-                browser = webdriver.Chrome()
+            path = os.path.join(dir,'drivers','geckodriver.exe')
+        opt = FireOptions()
+        opt.headless = True
+        try:
+            if sys.argv[2] == 'debug' or sys.argv[1] == 'debug':
+                browser = webdriver.Firefox(executable_path=path)
             else:
-                browser = webdriver.Chrome(options=opt)
-    except:
-        exit("\nSomething is not right... Please check all dependencies.")
+                raise IndexError
+        except IndexError:
+            browser = webdriver.Firefox(executable_path=path,options=opt)
+    else:
+        if sys.platform == 'linux':
+            path = os.path.join(dir,'drivers','chromedriver')
+        else:
+            path = os.path.join(dir,'drivers','chromedriver.exe')
+        opt = ChrOptions()
+        opt.headless=True
+        try:
+            if sys.argv[2] == 'debug' or sys.argv[1] == 'debug':
+                browser = webdriver.Chrome(executable_path=path)
+            else:
+                raise IndexError
+        except IndexError:
+            browser = webdriver.Chrome(executable_path=path,options=opt)
+    return True
+    '''except:
+        print("\nSomething is not right... Please check all dependencies.")
+        return False'''
 
 #  Start working in background while waiting for user input
 def initialize():
@@ -42,7 +60,8 @@ def initialize():
             default = False
     except IndexError:
         pass
-    choose_browser(default)
+    if not choose_browser(default):
+        exit()
 
 
 # backdoor entry for debugging purposes
