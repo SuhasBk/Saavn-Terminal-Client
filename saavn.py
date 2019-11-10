@@ -345,7 +345,7 @@ def navigate(song_name):
 if __name__ == '__main__':
     try:
         if len(sys.argv) < 3 :
-            if os.environ['COMPUTERNAME'] == 'MIDDLEEARTH':
+            if os.environ.get('COMPUTERNAME') == 'MIDDLEEARTH' or os.environ.get('HIDDEN_ID') == 'BATMAN':
                 sys.argv.append('firefox')
                 sys.argv.append('off')
             else:
