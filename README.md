@@ -2,7 +2,7 @@
 
 Browser automation script to listen songs, search for lyrics, download songs and share songs on Saavn right from terminal.
 
-Usage : saavn.py ('chrome'||'firefox') ('on'||'off')/*
+Usage : saavn.py ('chrome'||'firefox') ('on'||'off')*
 
 Dependencies :
 1) Chrome browser (version 78) or
