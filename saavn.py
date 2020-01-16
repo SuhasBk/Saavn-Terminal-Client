@@ -271,7 +271,7 @@ def handler():
             time.sleep(0.5)
             print("\nTrack name : "+browser.find_element_by_id('player-track-name').text+' from the album - '+browser.find_element_by_id('player-album-name').text+'\n')
 
-            ch = input(f"\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Top Songs This Week (based on language preference)\n'8' : Repeat Current Song\n'9' : Lyrics for Current Song\n'10' : Change Language (current language : {browser.find_element_by_id('language').text})\n'11' : Share this song...\n'12' : Download current song... (requires updated 'youtube-dl')\n'13' : Close Saavn...\n\nEnter your choice...\n> ")
+            ch = input(f"\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Top Songs This Week (based on language preference)\n'8' : Repeat Current Song\n'9' : Lyrics for Current Song...\n'10' : Change Language (current language : {browser.find_element_by_id('language').text})\n'11' : Share this song...\n'12' : Download current song...\n'13' : Close Saavn\n\nEnter your choice...\n> ")
 
             if ch in routes:
                 routes[ch]()
@@ -344,13 +344,13 @@ def navigate(song_name):
 
 if __name__ == '__main__':
     try:
-        if len(sys.argv) < 3 :
-            if os.environ.get('COMPUTERNAME') == 'MIDDLEEARTH' or os.environ.get('HIDDEN_ID') == 'BATMAN':
+        if os.environ.get('COMPUTERNAME') == 'MIDDLEEARTH' or os.environ.get('HIDDEN_ID') == 'BATMAN':
+            if len(sys.argv) < 3 :
                 sys.argv.append('firefox')
                 sys.argv.append('off')
-            else:
-                print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
-                exit()
+        else:
+            print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
+            exit()
         init = Thread(target=initialize)
         init.start()
         #  entry message and user input
