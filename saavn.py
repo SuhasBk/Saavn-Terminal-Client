@@ -21,30 +21,37 @@ def initialize():
     d = sys.argv[2]
     global browser
     dir = os.path.dirname(os.path.realpath(__file__))
-    if b=='firefox':
-        if sys.platform == 'linux':
-            path = os.path.join(dir,'drivers','linux','geckodriver')
-        else:
-            path = os.path.join(dir,'drivers','windows','geckodriver.exe')
+    if b == 'firefox':
         opt = FireOptions()
         opt.add_argument("--width=1920")
         opt.add_argument("--height=1080")
         opt.headless = True
+
+        if sys.platform == 'linux':
+            path = os.path.join(dir,'drivers','linux','geckodriver')
+            log_path = '/dev/null'
+        else:
+            path = os.path.join(dir,'drivers','windows','geckodriver.exe')
+            log_path = 'NUL'
+
         try:
             if d == 'on':
-                browser = webdriver.Firefox(executable_path=path)
+                browser = webdriver.Firefox(executable_path=path,service_log_path=log_path)
             else:
                 raise IndexError
         except IndexError:
-            browser = webdriver.Firefox(executable_path=path,options=opt)
+            browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=log_path)
     else:
+        opt = ChrOptions()
+        opt.add_argument("--window-size=1920,1080")
+        opt.add_argument("--log-level=OFF")
+        opt.headless = True
+
         if sys.platform == 'linux':
             path = os.path.join(dir,'drivers','linux','chromedriver')
         else:
             path = os.path.join(dir,'drivers','windows','chromedriver.exe')
-        opt = ChrOptions()
-        opt.add_argument("--window-size=1920,1080")
-        opt.headless=True
+
         try:
             if d == 'on':
                 browser = webdriver.Chrome(executable_path=path)
@@ -349,7 +356,7 @@ if __name__ == '__main__':
     try:
         if os.environ.get('COMPUTERNAME') == 'MIDDLEEARTH' or os.environ.get('HIDDEN_ID') == 'BATMAN':
             if len(sys.argv) < 3 :
-                sys.argv.append('firefox')
+                sys.argv.append('chrome')
                 sys.argv.append('off')
         else:
             print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
@@ -363,7 +370,6 @@ if __name__ == '__main__':
     finally:
         try:
             browser.quit()
-            os.remove('geckodriver.log')
         except:
             pass
         exit("Thank you for using this software")
