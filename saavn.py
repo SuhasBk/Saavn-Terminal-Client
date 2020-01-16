@@ -27,9 +27,11 @@ def initialize():
         else:
             path = os.path.join(dir,'drivers','windows','geckodriver.exe')
         opt = FireOptions()
+        opt.add_argument("--width=1920")
+        opt.add_argument("--height=1080")
         opt.headless = True
         try:
-            if d=='on':
+            if d == 'on':
                 browser = webdriver.Firefox(executable_path=path)
             else:
                 raise IndexError
@@ -41,9 +43,10 @@ def initialize():
         else:
             path = os.path.join(dir,'drivers','windows','chromedriver.exe')
         opt = ChrOptions()
+        opt.add_argument("--window-size=1920,1080")
         opt.headless=True
         try:
-            if d=='on':
+            if d == 'on':
                 browser = webdriver.Chrome(executable_path=path)
             else:
                 raise IndexError
@@ -54,8 +57,8 @@ def initialize():
 def debug():
     while(True):
         try:
-            cmd=input("Enter the debugging commands...\n")
-            if cmd=='exit' or cmd=='':
+            cmd = input("Enter the debugging commands...\n")
+            if cmd == 'exit' or cmd == '':
                 return
             exec(cmd)
         except:
