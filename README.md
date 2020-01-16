@@ -12,4 +12,4 @@ Dependencies :
 3) pip (19.2.3)
    Usage : pip install -r requirements.txt
    
-Note : If you encounter some problems, update your browsers and/or try using the latest [geckodriver](https://github.com/mozilla/geckodriver/releases) or [chromedriver](https://chromedriver.chromium.org/downloads).
+Note : If you encounter some problems, update your browser and/or try using the latest [geckodriver](https://github.com/mozilla/geckodriver/releases) or [chromedriver](https://chromedriver.chromium.org/downloads).
