@@ -36,6 +36,7 @@ def initialize():
 
         try:
             if d == 'on':
+                print("Debugging mode turned ON...")
                 browser = webdriver.Firefox(executable_path=path,service_log_path=log_path)
             else:
                 raise IndexError
@@ -43,22 +44,23 @@ def initialize():
             browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=log_path)
     else:
         opt = ChrOptions()
-        opt.add_argument("--window-size=1920,1080")
         opt.add_argument("--log-level=OFF")
         opt.headless = True
 
         if sys.platform == 'linux':
             path = os.path.join(dir,'drivers','linux','chromedriver')
+            log_path = '/dev/null'
         else:
             path = os.path.join(dir,'drivers','windows','chromedriver.exe')
+            log_path = 'NUL'
 
         try:
             if d == 'on':
-                browser = webdriver.Chrome(executable_path=path)
+                browser = webdriver.Chrome(executable_path=path,service_log_path=log_path)
             else:
                 raise IndexError
         except IndexError:
-            browser = webdriver.Chrome(executable_path=path,options=opt)
+            browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=log_path)
 
 # backdoor entry for debugging purposes
 def debug():
@@ -326,7 +328,7 @@ def navigate(song_name):
             print('Oops! No results found!')
             return
 
-        # remove ad in between songs:
+        # remove ad in between songs (experimental feature, may experience playback errors):
         #ad = browser.find_element_by_id('ad-drawer')
         #browser.execute_script("arguments[0].remove();",ad)
 
@@ -354,16 +356,16 @@ def navigate(song_name):
 
 if __name__ == '__main__':
     try:
-        if os.environ.get('COMPUTERNAME') == 'MIDDLEEARTH' or os.environ.get('HIDDEN_ID') == 'BATMAN':
-            if len(sys.argv) < 3 :
-                sys.argv.append('chrome')
+        if len(sys.argv) < 2 :
+            if os.environ.get('COMPUTERNAME') == 'MIDDLEEARTH' or os.environ.get('HIDDEN_ID') == 'BATMAN':
+                sys.argv.append('firefox')
                 sys.argv.append('off')
-        else:
-            print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
-            exit()
+            else:
+                print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
+                exit()
         init = Thread(target=initialize)
         init.start()
-        #  entry message and user input
+        #  welcome message and user input
         song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
         print("\n\aConnecting to Saavn...\n")
         navigate(song_name)
