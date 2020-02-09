@@ -254,10 +254,10 @@ def handler():
                     total = list(map(int,max_time.split(':')))
                     time = list(map(int,user_time.split(':')))
                 except:
-                    raise AttributeError
+                    raise Exception
 
                 if time[0] > total[0] or (time[0] == total[0] and time[1] > total[1]):
-                    raise AttributeError
+                    raise Exception
 
                 total_in_secs = 60 * total[0] + total[1]
                 time_in_secs = 60 * time[0] + time[1]
@@ -265,8 +265,8 @@ def handler():
                 per = time_in_secs / total_in_secs * 100
 
                 browser.execute_script(f'Player.seekSong({per})')
-                print('Song successfully seeked at '+user_time+"!\n")
-            except AttributeError:
+                print('Song successfully skipped to '+user_time+"!\n")
+            except Exception:
                 print("\nWrong time or time format.. Try again...")
                 return
 
