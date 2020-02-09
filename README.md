@@ -1,6 +1,6 @@
 # Saavn_Terminal_Client
 
-A Python browser automation script to listen songs, search for lyrics, download songs and share songs on Saavn right from terminal.
+A Python browser automation script to listen songs, search for lyrics, download songs and share songs on [Saavn](http://jiosaavn.com) right from terminal.
 
 Usage : saavn.py ('chrome'||'firefox') ('on'||'off')*
 
