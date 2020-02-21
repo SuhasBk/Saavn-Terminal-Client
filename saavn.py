@@ -149,10 +149,10 @@ def handler():
             else:
                 print("Searching for {}...".format(name))
 
-            r=requests.get("https://search.azlyrics.com/search.php?q="+'+'.join(name.split()),headers={'User-Agent':'MyApp'})
-            s=BeautifulSoup(r.text,'html.parser')
-            td=s.findAll('td',attrs={'class':'text-left visitedlyr'})
-            res=[]
+            r = requests.get("https://search.azlyrics.com/search.php?q="+'+'.join(name.split()),headers={'User-Agent':'MyApp'})
+            s = BeautifulSoup(r.text,'html.parser')
+            td = s.findAll('td',attrs={'class':'text-left visitedlyr'})
+            res = []
 
             if len(td) == 0:
                 custom = input("No results found for this...Want to try again? (y)\n")
@@ -173,9 +173,9 @@ def handler():
 
             for i,j in enumerate(res):
                 if choice==str(i):
-                    q=requests.get(j,headers={'user-agent':'MyApp'})
-                    s=BeautifulSoup(q.text,'html.parser')
-                    l=s.find('div',attrs={'class':'col-xs-12 col-lg-8 text-center'})
+                    q = requests.get(j,headers={'user-agent':'MyApp'})
+                    s = BeautifulSoup(q.text,'html.parser')
+                    l = s.find('div',attrs={'class':'col-xs-12 col-lg-8 text-center'})
                     try:
                         print(l.find('div',attrs={'class':''}).text)
                     except AttributeError:
