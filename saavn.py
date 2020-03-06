@@ -1,13 +1,20 @@
 #!/usr/bin/python3
+import selenium
+import time
+import string
+import sys
+import os
+import re
+import random
+import requests
+import qrcode
+from subprocess import run,PIPE
 from threading import Thread
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options as ChrOptions
 from selenium.webdriver.firefox.options import Options as FireOptions
-import selenium,time,string,sys,os,re,random,requests,qrcode
 from bs4 import BeautifulSoup
-from subprocess import run,PIPE
-import os,sys
 
 # global variables
 browser = None
@@ -325,8 +332,10 @@ def navigate(song_name):
         # browser.execute_script("arguments[0].click()",random.choice(titles).find_element_by_tag_name('a'))
 
         if len(titles) < 1:
-            print('Oops! No results found!')
-            return
+            print('Oops! No results found! Try again!')
+            song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
+            print("\n\aConnecting to Saavn...\n")
+            navigate(song_name)
 
         # remove ad in between songs (experimental feature, may experience playback errors):
         #ad = browser.find_element_by_id('ad-drawer')
