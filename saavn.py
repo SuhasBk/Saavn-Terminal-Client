@@ -51,7 +51,7 @@ def initialize():
             browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=log_path)
     else:
         opt = ChrOptions()
-        opt.add_argument("--log-level=OFF")
+        opt.add_argument("--log-level=3")
         opt.headless = True
 
         if sys.platform == 'linux':
