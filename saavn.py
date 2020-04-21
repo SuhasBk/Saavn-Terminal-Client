@@ -278,7 +278,7 @@ def handler():
                 return
 
         def cya():
-            exit('Stopping playback...Closing Saavn...')
+            sys.exit('Stopping playback...Closing Saavn...')
 
         def default():
             print('Wrong Choice!\n')
@@ -371,7 +371,7 @@ if __name__ == '__main__':
                 sys.argv.append('off')
             else:
                 print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
-                exit()
+                sys.exit()
         init = Thread(target=initialize)
         init.start()
         #  welcome message and user input
@@ -383,4 +383,4 @@ if __name__ == '__main__':
             browser.quit()
         except:
             pass
-        exit("Thank you for using this software")
+        sys.exit("Thank you for using this software")
