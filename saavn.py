@@ -34,9 +34,13 @@ def initialize():
         opt.add_argument("--height=1080")
         opt.headless = True
 
-        if sys.platform == 'linux':
+        if sys.platform.startswith('linux'):
             path = os.path.join(dir,'drivers','linux','geckodriver')
             log_path = '/dev/null'
+
+            if sys.platform == 'darwin':
+                path = os.path.join(dir, 'drivers', 'mac', 'geckodriver')
+                log_path = '/dev/null'
         else:
             path = os.path.join(dir,'drivers','windows','geckodriver.exe')
             log_path = 'NUL'
@@ -57,6 +61,10 @@ def initialize():
         if sys.platform == 'linux':
             path = os.path.join(dir,'drivers','linux','chromedriver')
             log_path = '/dev/null'
+
+            if sys.platform == 'darwin':
+                path = os.path.join(dir, 'drivers', 'mac', 'chromedriver')
+                log_path = '/dev/null'
         else:
             path = os.path.join(dir,'drivers','windows','chromedriver.exe')
             log_path = 'NUL'
