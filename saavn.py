@@ -27,57 +27,62 @@ def initialize():
     b = sys.argv[1]
     d = sys.argv[2]
     global browser
-    dir = os.path.dirname(os.path.realpath(__file__))
-    if b == 'firefox':
-        opt = FireOptions()
-        opt.add_argument("--width=1920")
-        opt.add_argument("--height=1080")
-        opt.headless = True
 
-        if sys.platform.startswith('linux'):
-            path = os.path.join(dir,'drivers','linux','geckodriver')
-            log_path = '/dev/null'
+    try:
+        driver_dir = os.path.dirname(os.path.realpath(__file__))
+        if b == 'firefox':
+            opt = FireOptions()
+            opt.add_argument("--width=1920")
+            opt.add_argument("--height=1080")
+            opt.headless = True
 
-            if sys.platform == 'darwin':
-                path = os.path.join(dir, 'drivers', 'mac', 'geckodriver')
+            if sys.platform.startswith('linux'):
+                path = os.path.join(driver_dir,'drivers','linux','geckodriver')
                 log_path = '/dev/null'
-        else:
-            path = os.path.join(dir,'drivers','windows','geckodriver.exe')
-            log_path = 'NUL'
 
-        try:
-            if d == 'on':
-                print("Debugging mode turned ON...")
-                browser = webdriver.Firefox(executable_path=path,service_log_path=log_path)
+                if sys.platform == 'darwin':
+                    path = os.path.join(driver_dir, 'drivers', 'mac', 'geckodriver')
+                    log_path = '/dev/null'
             else:
-                raise IndexError
-        except IndexError:
-            browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=log_path)
-    else:
-        opt = ChrOptions()
-        opt.add_argument("--log-level=3")
-        opt.headless = True
+                path = os.path.join(driver_dir,'drivers','windows','geckodriver.exe')
+                log_path = 'NUL'
 
-        if sys.platform == 'linux':
-            path = os.path.join(dir,'drivers','linux','chromedriver')
-            log_path = '/dev/null'
+            try:
+                if d == 'on':
+                    print("Debugging mode turned ON...")
+                    browser = webdriver.Firefox(executable_path=path,service_log_path=log_path)
+                else:
+                    raise IndexError
+            except IndexError:
+                browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=log_path)
+        else:
+            opt = ChrOptions()
+            opt.add_argument("--log-level=3")
+            opt.headless = True
 
-            if sys.platform == 'darwin':
-                path = os.path.join(dir, 'drivers', 'mac', 'chromedriver')
+            if sys.platform == 'linux':
+                path = os.path.join(driver_dir,'drivers','linux','chromedriver')
                 log_path = '/dev/null'
-        else:
-            path = os.path.join(dir,'drivers','windows','chromedriver.exe')
-            log_path = 'NUL'
 
-        try:
-            if d == 'on':
-                print("Debugging mode turned ON...")
-                browser = webdriver.Chrome(executable_path=path,service_log_path=log_path)
+                if sys.platform == 'darwin':
+                    path = os.path.join(driver_dir, 'drivers', 'mac', 'chromedriver')
+                    log_path = '/dev/null'
             else:
-                raise IndexError
-        except IndexError:
-            browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=log_path)
-    return
+                path = os.path.join(driver_dir,'drivers','windows','chromedriver.exe')
+                log_path = 'NUL'
+
+            try:
+                if d == 'on':
+                    print("Debugging mode turned ON...")
+                    browser = webdriver.Chrome(executable_path=path,service_log_path=log_path)
+                else:
+                    raise IndexError
+            except IndexError:
+                browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=log_path)
+    except Exception as e:
+        return e
+
+    return True
 
 # backdoor entry for debugging purposes
 def debug():
@@ -91,10 +96,6 @@ def debug():
             print('\nBAD CODE\n')
             pass
 
-def lang():
-            browser.execute_script("Header.changeLanguage('{}');".format(input("Enter language preference..\n").lower()))
-            return
-
 def new():
     song_name = '+'.join(input("Enter the song name you want to listen to.... Type 'q' to go back\n> ").split())
     if song_name == 'q':
@@ -103,58 +104,53 @@ def new():
         navigate(song_name)
 
 def next():
-    fwd = browser.find_element_by_id('fwd')
+    fwd = browser.find_element_by_class_name('c-player__btn-next').find_element_by_tag_name('span')
     browser.execute_script("arguments[0].click();",fwd)
     print("\nPlaying next song...\n")
-    return
 
 def play_pause():
     global pause
-    if pause==0:
+
+    if pause == 0:
         pause = 1
-        p = browser.find_element_by_id('pause')
-    elif pause==1:
+        browser.execute_script("MUSIC_PLAYER.pause();")
+    elif pause == 1:
         pause = 0
-        p = browser.find_element_by_id('play')
-    browser.execute_script("arguments[0].click();",p)
-    return
+        browser.execute_script("MUSIC_PLAYER.play();")
 
 def prev():
-    rew = browser.find_element_by_id('rew')
+    rew = browser.find_element_by_class_name('c-player__btn-prev').find_element_by_tag_name('span')
     browser.execute_script("arguments[0].click();",rew)
     print("\nPlaying the last song....\n")
-    return
 
-def info():
-    print("\nTrack name : "+browser.find_element_by_id('player-track-name').text+' from the album -  '+browser.find_element_by_id('player-album-name').text)
-    print("\nTrack duration : "+browser.find_element_by_id('track-time').text)
-    print("\nElapsed time : "+browser.find_element_by_id('track-elapsed').text)
-    return
+def info(gui=False):
+    track_name = browser.find_element_by_xpath("//h4[@class='u-deci u-ellipsis u-margin-bottom-none@sm']").text
+    meta_name = browser.find_element_by_xpath("//p[@class='u-centi u-ellipsis u-color-js-gray-alt-light u-margin-bottom-none@sm']").text
+    duration = browser.find_element_by_xpath("//span[@class='u-centi u-valign-text-bottom u-padding-horizontal-small@sm']").text
 
-def top():
-    print('\nStopping current playback...\n')
-    browser.get('https://jiosaavn.com')
-    a = browser.find_elements_by_class_name('x-small')[1]
-    browser.execute_script("arguments[0].click()",a)
-    time.sleep(5)
-    browser.find_element_by_class_name('play').click()
+    if not gui:
+        print("\nTrack name : "+track_name+' from the artist/album -  '+meta_name)
+        print("\nTrack duration : "+duration)
+
+    return track_name,meta_name,duration
 
 def repeat():
     global rep
-    button = browser.find_element_by_id('repeat')
-    if rep==0:
-        rep=1
+
+    button = browser.find_element_by_xpath("//li[@class='c-player__btn c-player__btn--shift c-player__btn-action1']").find_element_by_tag_name('span')
+
+    if rep == 0:
+        rep = 1
         browser.execute_script('arguments[0].click();',button)
         print('\nRepeat mode ON\n')
-    elif rep==1:
-        rep=0
+    elif rep == 1:
+        rep = 0
         for _ in range(0,2):
             browser.execute_script('arguments[0].click();',button)
         print('\nRepeat mode OFF\n')
-    return
 
 def lyrics():
-    name = browser.find_element_by_id('player-track-name').text
+    name = info()[0]
 
     if input("The current search paramter is '{}'. Do you want to continue ('n') or refine it? ('y')\n> ".format(name)) == 'y':
         name = input("Enter the search term...\n> ")
@@ -195,22 +191,9 @@ def lyrics():
                 print('\nOops! Requested lyrics not available...\n')
         elif choice == 'exit':
             return
-    return
-
-def share():
-    share = browser.find_element_by_id('now-playing-extras')
-    song = share.find_element_by_id('player-share')
-    browser.execute_script("arguments[0].click();",share)
-    browser.execute_script("arguments[0].click();",song)
-
-    inp = browser.find_elements_by_tag_name('input')
-    link = inp[len(inp)-1].get_attribute("value")
-    print("Share this link or scan the QR code :- {}".format(link))
-    img = qrcode.make(link)
-    img.show()
 
 def download():
-    search_term = browser.find_element_by_id('player-track-name').text
+    search_term = info()[0]
     print("Fetching results for "+search_term)
     r = requests.get("http://youtube.com/results?search_query=" + '+'.join(search_term),headers={'User-Agent':'random_stuff'})
 
@@ -255,8 +238,9 @@ def download():
 
 def seek():
     try:
-        max_time = browser.find_element_by_id('track-time').text
-        curr_time = browser.find_element_by_id('track-elapsed').text
+        time = info()[2].split('/')
+        max_time = time[1].strip()
+        curr_time = time[0].strip()
 
         user_time = input("\nThe total duration of the track is : {}.\nThe current duration of the track is : {}. ( enter 'r' to refresh )\nEnter the new time in '[mm:ss]' format :\n> ".format(max_time,curr_time))
 
@@ -272,12 +256,9 @@ def seek():
         if time[0] > total[0] or (time[0] == total[0] and time[1] > total[1]):
             raise Exception
 
-        total_in_secs = 60 * total[0] + total[1]
         time_in_secs = 60 * time[0] + time[1]
 
-        per = time_in_secs / total_in_secs * 100
-
-        browser.execute_script(f'Player.seekSong({per})')
+        browser.execute_script(f'MUSIC_PLAYER.({time_in_secs})')
         print('Song successfully skipped to '+user_time+"!\n")
     except Exception:
         print("\nWrong time or time format.. Try again...")
@@ -293,15 +274,13 @@ def default():
 # browser control
 def handler():
     try:
-        browser.execute_script(f"Player.setBitrate({128});")        # Highest quality ;)
-
-        routes = {'1':new,'2':next,'3':play_pause,'4':prev,'5' : seek,'6':info,'7':top,'8':repeat,'9':lyrics,'10':lang,'11':share,'12':download,'13':cya,'14':debug,'default':default}
+        routes = {'1':new,'2':next,'3':play_pause,'4':prev,'5' : seek,'6':info,'7':repeat,'8':lyrics,'9':download,'10':cya,'11':debug,'default':default}
 
         while True:
             time.sleep(0.5)
-            print("\nTrack name : "+browser.find_element_by_id('player-track-name').text+' from the album - '+browser.find_element_by_id('player-album-name').text+'\n')
+            info()
 
-            ch = input(f"\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Top Songs This Week (based on language preference)\n'8' : Repeat Current Song\n'9' : Lyrics for Current Song...\n'10' : Change Language (current language : {browser.find_element_by_id('language').text})\n'11' : Share this song...\n'12' : Download current song...\n'13' : Close Saavn\n\nEnter your choice...\n> ")
+            ch = input(f"\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Repeat Current Song\n'8' : Lyrics for Current Song...\n'9' : Download current song...\n'10' : Close Saavn\n\nEnter your choice...\n> ")
 
             if ch in routes:
                 routes[ch]()
@@ -314,33 +293,32 @@ def handler():
         handler()
 
 # navigating around saavn
-def navigate(song_name):
-
+def navigate(song_name,gui=False):
     #  if user is feeling bored to type
     if song_name == '':
-        print("\nPlaying this week's top songs...\n")
-        browser.get('http://jiosaavn.com/')
-        a = browser.find_elements_by_class_name('x-small')[1]
-        browser.execute_script("arguments[0].click()",a)
-        time.sleep(5)
-        browser.find_element_by_class_name('play').click()
+        song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
+        navigate(song_name)
     else:
         try:
             print("\nSearching for "+' '.join(song_name.split('+'))+'...')
             browser.get('http://jiosaavn.com/search/{}'.format(song_name))
+            time.sleep(5)
         except:
             browser.quit()
             sys.exit('\nCheck your internet connection and try again...\n')
 
         # logic to start playback:
-        titles = browser.find_elements_by_class_name('title')
-        meta = browser.find_elements_by_class_name('meta-album')
+        titles = browser.find_elements_by_class_name('u-color-js-gray')[1::2][:10]
+        artists = browser.find_elements_by_xpath("//div[@class='o-snippet__item']//p[@class='u-centi u-ellipsis u-color-js-gray-alt-light']")[::2][:10]
 
-        #  selects random track:
-        # browser.execute_script("arguments[0].click()",random.choice(titles).find_element_by_tag_name('a'))
+        data = zip(list(range(len(titles))), titles, artists)
+
+        if gui:
+            print("Sending data...")
+            return list(data)
 
         if len(titles) < 1:
-            print('Oops! No results found! Try again!')
+            print('No results found! Try again. If it still does not work, the UI must have been updated by Saavn.')
             song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
             print("\n\aConnecting to Saavn...\n")
             navigate(song_name)
@@ -349,26 +327,29 @@ def navigate(song_name):
         #ad = browser.find_element_by_id('ad-drawer')
         #browser.execute_script("arguments[0].remove();",ad)
 
-        for i,j,k in zip(list(range(len(titles))),titles,meta):
+        for i,j,k in data:
                 print(i,j.text,' : ',k.text)
+
+        # selects random track:
+        #browser.execute_script("arguments[0].click()",random.choice(titles))
 
         ch = input("\nEnter your choice ('exit' to quit and 'q' to return):\n> ")
         for i,j in enumerate(titles):
             if ch==str(i):
-                browser.execute_script("arguments[0].click();",j.find_element_by_tag_name('a'))
+                j.click()
             elif ch=='':
-                browser.execute_script("arguments[0].click();",titles[0].find_element_by_tag_name('a'))
+                titles[0].click()
             elif ch=='exit':
                 return
             elif ch=='q':
                 return
 
         time.sleep(3)
-        song = browser.find_element_by_class_name('play')
-        try:
-            song.click()
-        except:
-            browser.execute_script('arguments[0].click();',song)
+        song = browser.find_element_by_xpath("//p/a[@class='c-btn c-btn--primary']")
+        browser.execute_script("window.scrollTo(0,100);")
+        song.click()
+        time.sleep(2)
+        browser.execute_script("MUSIC_PLAYER.setVolume(100);")
     handler()
 
 if __name__ == '__main__':
@@ -392,6 +373,10 @@ if __name__ == '__main__':
             init.join()
         
         navigate(song_name)
+
+    except Exception as e:
+        print(e)
+        
     finally:
         try:
             browser.quit()
