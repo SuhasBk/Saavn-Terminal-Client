@@ -258,11 +258,23 @@ def seek():
 
         time_in_secs = 60 * time[0] + time[1]
 
-        browser.execute_script(f'MUSIC_PLAYER.({time_in_secs})')
+        browser.execute_script(f'MUSIC_PLAYER.seek({time_in_secs})')
         print('Song successfully skipped to '+user_time+"!\n")
     except Exception:
         print("\nWrong time or time format.. Try again...")
         return
+
+def share():
+    try:
+        browser.find_element_by_xpath("//span[@class='o-icon-ellipsis o-icon--xlarge u-valign-bottom c-btn-overflow']").click()
+    except selenium.common.exceptions.ElementClickInterceptedException:
+        pass
+    
+    time.sleep(0.5)
+    link = browser.execute_script("return document.getElementsByClassName('u-hidden-visually')[0].textContent")
+    print("Share this link or scan the QR code :- {}".format(link))
+    img = qrcode.make(link)
+    img.show()
 
 def cya():
     sys.exit('Stopping playback...Closing Saavn...')
@@ -274,13 +286,14 @@ def default():
 # browser control
 def handler():
     try:
-        routes = {'1':new,'2':next,'3':play_pause,'4':prev,'5' : seek,'6':info,'7':repeat,'8':lyrics,'9':download,'10':cya,'11':debug,'default':default}
+        routes = {'1':new,'2':next,'3':play_pause,'4':prev,'5' : seek,'6':info,'7':repeat,'8':lyrics,'9':download,'10':share,'11':cya,'12':debug,'default':default}
 
         while True:
             time.sleep(0.5)
             info()
-
-            ch = input(f"\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Repeat Current Song\n'8' : Lyrics for Current Song...\n'9' : Download current song...\n'10' : Close Saavn\n\nEnter your choice...\n> ")
+            browser.execute_script("MUSIC_PLAYER.setVolume(100);")
+            
+            ch = input(f"\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Repeat Current Song\n'8' : Lyrics for Current Song...\n'9' : Download current song...\n'10' : Share current song...\n'11' : Close Saavn\n\nEnter your choice...\n> ")
 
             if ch in routes:
                 routes[ch]()
@@ -349,7 +362,6 @@ def navigate(song_name,gui=False):
         browser.execute_script("window.scrollTo(0,100);")
         song.click()
         time.sleep(2)
-        browser.execute_script("MUSIC_PLAYER.setVolume(100);")
     handler()
 
 if __name__ == '__main__':
