@@ -14,11 +14,14 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options as ChrOptions
 from selenium.webdriver.firefox.options import Options as FireOptions
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
 # global variables
 browser = None
-pause = 0
 rep = 0
 
 #  Start working in background while waiting for user input
@@ -32,8 +35,6 @@ def initialize():
         driver_dir = os.path.dirname(os.path.realpath(__file__))
         if b == 'firefox':
             opt = FireOptions()
-            opt.add_argument("--width=1920")
-            opt.add_argument("--height=1080")
             opt.headless = True
 
             if sys.platform.startswith('linux'):
@@ -96,31 +97,43 @@ def debug():
             print('\nBAD CODE\n')
             pass
 
-def new():
+def wait_and_find(element,selector,root=browser):
+    try:
+        WebDriverWait(browser,10).until(EC.element_to_be_clickable((selector,element)))
+    except TimeoutException as e:
+        print("Something is nasty",e,'\n',element)
+    
+    return root.find_elements(selector,element)
+
+def fix_volume_bug():
+    try:
+        while(browser.title):
+            if browser.execute_script('return MUSIC_PLAYER.getVolume()') != 100:
+                browser.execute_script("MUSIC_PLAYER.setVolume(100);")
+            time.sleep(3)
+    except:
+        pass
+
+def new_song():
     song_name = '+'.join(input("Enter the song name you want to listen to.... Type 'q' to go back\n> ").split())
     if song_name == 'q':
         pass
     else:
         navigate(song_name)
 
-def next():
+def next_song():
     fwd = browser.find_element_by_class_name('c-player__btn-next').find_element_by_tag_name('span')
-    browser.execute_script("arguments[0].click();",fwd)
+    #fwd.click()
+    browser.execute_script('arguments[0].click()',fwd)
     print("\nPlaying next song...\n")
 
 def play_pause():
-    global pause
+    browser.execute_script('MUSIC_PLAYER.playToggle()')
 
-    if pause == 0:
-        pause = 1
-        browser.execute_script("MUSIC_PLAYER.pause();")
-    elif pause == 1:
-        pause = 0
-        browser.execute_script("MUSIC_PLAYER.play();")
-
-def prev():
+def prev_song():
     rew = browser.find_element_by_class_name('c-player__btn-prev').find_element_by_tag_name('span')
-    browser.execute_script("arguments[0].click();",rew)
+    # rew.click()
+    browser.execute_script('arguments[0].click()',rew)
     print("\nPlaying the last song....\n")
 
 def info(gui=False):
@@ -147,6 +160,7 @@ def repeat():
         rep = 0
         for _ in range(0,2):
             browser.execute_script('arguments[0].click();',button)
+            time.sleep(0.3)
         print('\nRepeat mode OFF\n')
 
 def lyrics():
@@ -283,15 +297,15 @@ def default():
     print('Wrong Choice!\n')
     return
 
-# browser control
+# ultimate browser control
 def handler():
+    Thread(target=fix_volume_bug).start()
     try:
-        routes = {'1':new,'2':next,'3':play_pause,'4':prev,'5' : seek,'6':info,'7':repeat,'8':lyrics,'9':download,'10':share,'11':cya,'12':debug,'default':default}
+        routes = {'1':new_song,'2':next_song,'3':play_pause,'4':prev_song,'5' : seek,'6':info,'7':repeat,'8':lyrics,'9':download,'10':share,'11':cya,'12':debug,'default':default}
 
         while True:
             time.sleep(0.5)
             info()
-            browser.execute_script("MUSIC_PLAYER.setVolume(100);")
             
             ch = input(f"\n'1' : New Song\n'2' : Next Song\n'3' : Play/Pause\n'4' : Previous Song\n'5' : Seek Song\n'6' : Song Info\n'7' : Repeat Current Song\n'8' : Lyrics for Current Song...\n'9' : Download current song...\n'10' : Share current song...\n'11' : Close Saavn\n\nEnter your choice...\n> ")
 
@@ -307,21 +321,21 @@ def handler():
 
 # navigating around saavn
 def navigate(song_name,gui=False):
-    #  if user is feeling bored to type
     if song_name == '':
         song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
         navigate(song_name)
     else:
         try:
             print("\nSearching for "+' '.join(song_name.split('+'))+'...')
-            browser.get('http://jiosaavn.com/search/{}'.format(song_name))
+            browser.get('https://jiosaavn.com/search/{}'.format(song_name))
             time.sleep(5)
         except:
             browser.quit()
             sys.exit('\nCheck your internet connection and try again...\n')
 
         # logic to start playback:
-        titles = browser.find_elements_by_class_name('u-color-js-gray')[1::2][:10]
+        titles = wait_and_find('u-color-js-gray',By.CLASS_NAME,browser)[1::2][:10]
+        #titles = browser.find_elements_by_class_name('u-color-js-gray')[1::2][:10]
         artists = browser.find_elements_by_xpath("//div[@class='o-snippet__item']//p[@class='u-centi u-ellipsis u-color-js-gray-alt-light']")[::2][:10]
 
         data = zip(list(range(len(titles))), titles, artists)
@@ -336,31 +350,27 @@ def navigate(song_name,gui=False):
             print("\n\aConnecting to Saavn...\n")
             navigate(song_name)
 
-        # remove ad in between songs (experimental feature, may experience playback errors):
-        #ad = browser.find_element_by_id('ad-drawer')
-        #browser.execute_script("arguments[0].remove();",ad)
-
         for i,j,k in data:
-                print(i,j.text,' : ',k.text)
+                print(i+1,' : ',j.text,' : ',k.text)
 
         # selects random track:
-        #browser.execute_script("arguments[0].click()",random.choice(titles))
+        # browser.execute_script("arguments[0].click()",random.choice(titles))
 
         ch = input("\nEnter your choice ('exit' to quit and 'q' to return):\n> ")
         for i,j in enumerate(titles):
-            if ch==str(i):
-                j.click()
-            elif ch=='':
-                titles[0].click()
-            elif ch=='exit':
+            if ch == str(i-1):
+                browser.execute_script("arguments[0].click();", j)
+            elif ch == '':
+                browser.execute_script("arguments[0].click();", titles[0])
+            elif ch == 'exit':
                 return
-            elif ch=='q':
+            elif ch == 'q':
                 return
 
         time.sleep(3)
-        song = browser.find_element_by_xpath("//p/a[@class='c-btn c-btn--primary']")
         browser.execute_script("window.scrollTo(0,100);")
-        song.click()
+        play_btn = wait_and_find("//p/a[@class='c-btn c-btn--primary']",By.XPATH,browser)[0]
+        play_btn.click()
         time.sleep(2)
     handler()
 
@@ -373,6 +383,7 @@ if __name__ == '__main__':
             else:
                 print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
                 sys.exit()
+
         init = Thread(target=initialize)
         init.start()
         
@@ -394,4 +405,4 @@ if __name__ == '__main__':
             browser.quit()
         except:
             pass
-        sys.exit("Thank you for using this software")
+        sys.exit("Thank you for using this software. Keep rockin' 🎵🤘🎵")
