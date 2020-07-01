@@ -86,7 +86,7 @@ def initialize():
     return True
 
 # backdoor entry for debugging purposes
-def debug():
+def debug(*args,**kwargs):
     while(True):
         try:
             cmd = input("Enter the debugging commands...\n")
@@ -99,7 +99,7 @@ def debug():
 
 def wait_and_find(element,selector,root=browser):
     try:
-        WebDriverWait(browser,10).until(EC.element_to_be_clickable((selector,element)))
+        WebDriverWait(browser,20).until(EC.element_to_be_clickable((selector,element)))
     except TimeoutException as e:
         print("Something is nasty",e,'\n',element)
     
@@ -335,7 +335,6 @@ def navigate(song_name,gui=False):
 
         # logic to start playback:
         titles = wait_and_find('u-color-js-gray',By.CLASS_NAME,browser)[1::2][:10]
-        #titles = browser.find_elements_by_class_name('u-color-js-gray')[1::2][:10]
         artists = browser.find_elements_by_xpath("//div[@class='o-snippet__item']//p[@class='u-centi u-ellipsis u-color-js-gray-alt-light']")[::2][:10]
 
         data = zip(list(range(len(titles))), titles, artists)
@@ -357,8 +356,8 @@ def navigate(song_name,gui=False):
         # browser.execute_script("arguments[0].click()",random.choice(titles))
 
         ch = input("\nEnter your choice ('exit' to quit and 'q' to return):\n> ")
-        for i,j in enumerate(titles):
-            if ch == str(i-1):
+        for i,j in enumerate(titles,1):
+            if ch == str(i):
                 browser.execute_script("arguments[0].click();", j)
             elif ch == '':
                 browser.execute_script("arguments[0].click();", titles[0])
