@@ -7,6 +7,7 @@ import saavn
 from saavn import By,play_pause, next_song, prev_song, repeat, info, wait_and_find, initialize, fix_volume_bug
 import concurrent.futures
 import time
+from threading import Thread
 
 # main window configs:
 main_frame = Tk()
@@ -61,16 +62,23 @@ def search(event):
         play_btn = wait_and_find("//p/a[@class='c-btn c-btn--primary']",By.XPATH,saavn.browser)[0]
         play_btn.click()
         
+        # clear search results:
+        for widget in song_choice.winfo_children():
+            widget.grid_forget()
+
         song_choice.grid_remove()
         input_frame.grid()
         info_frame.grid(pady=100)
         controls_frame.grid()
+        Thread(target=fix_volume_bug).start()
         load_info()
     
     song_choice.grid()
+    song_choice_label.grid(row=0, pady=20)
     song_choice_label.config(text="Searching...")
     input_frame.grid_remove()
     info_frame.grid_remove()
+    controls_frame.grid_remove()
 
     song_name = '+'.join(search_bar.get().split())
     data = saavn.navigate(song_name,True)
@@ -89,7 +97,6 @@ def search(event):
     
     song_choice_label.config(text="Select a song from the list...")
 
-
 # button and label placements:
 root.pack()
 welcome_msg.grid(ipady=20)
@@ -101,7 +108,6 @@ prev_btn.grid(row=0, column=0)
 play_pause_btn.grid(row=0, column=1, padx=10)
 next_btn.grid(row=0, column=2)
 repeat_btn.grid(row=1, column=1,pady=10)
-song_choice_label.grid(row=0, pady=20)
 track_label.grid(sticky="W", row=0, column=0, columnspan=2)
 track_elapsed.grid(sticky="W", row=1, column=0)
 track_meta.grid(sticky="W", row=2, column=0)
@@ -119,11 +125,13 @@ if __name__ == '__main__':
             return_value = future.result()
             
             if return_value != True:
-                messagebox.showerror(title="Dependency errors",message=return_value)
-                sleep(10)
-                sys.exit(1)
-
-        main_frame.mainloop()
+                raise Exception(return_value)
+        try:
+            main_frame.mainloop()
+        except Exception as e:
+            messagebox.showerror(title="Oops!", message=e)
+            sleep(5)
+            sys.exit(1)
     finally:
         try:
             saavn.browser.quit()

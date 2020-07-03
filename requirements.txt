@@ -3,3 +3,4 @@ youtube-dl
 requests==2.20.1
 beautifulsoup4==4.7.1
 qrcode==6.1
+pyfiglet

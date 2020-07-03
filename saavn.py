@@ -8,6 +8,8 @@ import re
 import random
 import requests
 import qrcode
+import pyfiglet
+from colorama import init,Fore
 from subprocess import run,PIPE
 from threading import Thread
 from selenium import webdriver
@@ -24,9 +26,12 @@ from bs4 import BeautifulSoup
 browser = None
 rep = 0
 
+# Colorama init function:
+init(autoreset=True)
+print(Fore.GREEN + pyfiglet.figlet_format('SAAVN TERMINAL CLIENT'))
+
 #  Start working in background while waiting for user input
 def initialize():
-    print('Welcome To Saavn Terminal Client!')
     b = sys.argv[1]
     d = sys.argv[2]
     global browser
@@ -101,7 +106,7 @@ def wait_and_find(element,selector,root=browser):
     try:
         WebDriverWait(browser,20).until(EC.element_to_be_clickable((selector,element)))
     except TimeoutException as e:
-        print("Something is nasty",e,'\n',element)
+        print("Something went wrong",e,'\n',element)
     
     return root.find_elements(selector,element)
 
@@ -136,12 +141,12 @@ def prev_song():
     browser.execute_script('arguments[0].click()',rew)
     print("\nPlaying the last song....\n")
 
-def info(gui=False):
+def info(flush=False):
     track_name = browser.find_element_by_xpath("//h4[@class='u-deci u-ellipsis u-margin-bottom-none@sm']").text
     meta_name = browser.find_element_by_xpath("//p[@class='u-centi u-ellipsis u-color-js-gray-alt-light u-margin-bottom-none@sm']").text
     duration = browser.find_element_by_xpath("//span[@class='u-centi u-valign-text-bottom u-padding-horizontal-small@sm']").text
 
-    if not gui:
+    if not flush:
         print("\nTrack name : "+track_name+' from the artist/album -  '+meta_name)
         print("\nTrack duration : "+duration)
 
@@ -164,7 +169,7 @@ def repeat():
         print('\nRepeat mode OFF\n')
 
 def lyrics():
-    name = info()[0]
+    name = info(True)[0]
 
     if input("The current search paramter is '{}'. Do you want to continue ('n') or refine it? ('y')\n> ".format(name)) == 'y':
         name = input("Enter the search term...\n> ")
@@ -207,7 +212,7 @@ def lyrics():
             return
 
 def download():
-    search_term = info()[0]
+    search_term = info(True)[0]
     print("Fetching results for "+search_term)
     r = requests.get("http://youtube.com/results?search_query=" + '+'.join(search_term),headers={'User-Agent':'random_stuff'})
 
@@ -252,7 +257,7 @@ def download():
 
 def seek():
     try:
-        time = info()[2].split('/')
+        time = info(True)[2].split('/')
         max_time = time[1].strip()
         curr_time = time[0].strip()
 
