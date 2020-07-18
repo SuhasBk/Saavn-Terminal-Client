@@ -44,23 +44,20 @@ def initialize():
 
             if sys.platform.startswith('linux'):
                 path = os.path.join(driver_dir,'drivers','linux','geckodriver')
-                log_path = '/dev/null'
 
                 if sys.platform == 'darwin':
                     path = os.path.join(driver_dir, 'drivers', 'mac', 'geckodriver')
-                    log_path = '/dev/null'
             else:
                 path = os.path.join(driver_dir,'drivers','windows','geckodriver.exe')
-                log_path = 'NUL'
 
             try:
                 if d == 'on':
                     print("Debugging mode turned ON...")
-                    browser = webdriver.Firefox(executable_path=path,service_log_path=log_path)
+                    browser = webdriver.Firefox(executable_path=path,service_log_path=os.path.devnull)
                 else:
                     raise IndexError
             except IndexError:
-                browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=log_path)
+                browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=os.path.devnull)
         else:
             opt = ChrOptions()
             opt.add_argument("--log-level=3")
@@ -68,23 +65,20 @@ def initialize():
 
             if sys.platform == 'linux':
                 path = os.path.join(driver_dir,'drivers','linux','chromedriver')
-                log_path = '/dev/null'
 
                 if sys.platform == 'darwin':
                     path = os.path.join(driver_dir, 'drivers', 'mac', 'chromedriver')
-                    log_path = '/dev/null'
             else:
                 path = os.path.join(driver_dir,'drivers','windows','chromedriver.exe')
-                log_path = 'NUL'
 
             try:
                 if d == 'on':
                     print("Debugging mode turned ON...")
-                    browser = webdriver.Chrome(executable_path=path,service_log_path=log_path)
+                    browser = webdriver.Chrome(executable_path=path,service_log_path=os.path.devnull)
                 else:
                     raise IndexError
             except IndexError:
-                browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=log_path)
+                browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=os.path.devnull)
     except Exception as e:
         return e
 
@@ -326,6 +320,12 @@ def handler():
 
 # navigating around saavn
 def navigate(song_name,gui=False):
+    def restart(msg):
+        print(msg)
+        song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
+        print("\n\aConnecting to Saavn...\n")
+        navigate(song_name)
+
     if song_name == '':
         song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
         navigate(song_name)
@@ -349,16 +349,19 @@ def navigate(song_name,gui=False):
             return list(data)
 
         if len(titles) < 1:
-            print('No results found! Try again. If it still does not work, the UI must have been updated by Saavn.')
-            song_name = '+'.join(input("Enter the song name you want to listen to....\n> ").split())
-            print("\n\aConnecting to Saavn...\n")
-            navigate(song_name)
+            restart('No results found! Try again. If it still does not work, the UI must have been updated by Saavn.')
 
         for i,j,k in data:
                 print(i+1,' : ',j.text,' : ',k.text)
 
         # selects random track:
         # browser.execute_script("arguments[0].click()",random.choice(titles))
+
+        # accept cookies one time only:
+        try:
+            browser.find_element_by_css_selector("span[class='c-btn c-btn--senary c-btn--tiny']").click()
+        except:
+            pass
 
         ch = input("\nEnter your choice ('exit' to quit and 'q' to return):\n> ")
         for i,j in enumerate(titles,1):
@@ -372,10 +375,15 @@ def navigate(song_name,gui=False):
                 return
 
         time.sleep(3)
-        browser.execute_script("window.scrollTo(0,100);")
-        play_btn = wait_and_find("//p/a[@class='c-btn c-btn--primary']",By.XPATH,browser)[0]
+        play_btn = browser.find_element_by_css_selector("a[class='c-btn c-btn--primary']")
         play_btn.click()
         time.sleep(2)
+        
+        try:
+            browser.execute_script("MUSIC_PLAYER")
+        except:
+            restart('\nError while playing this song... Try another...\n')
+
     handler()
 
 if __name__ == '__main__':
