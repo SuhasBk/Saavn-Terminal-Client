@@ -36,51 +36,46 @@ def initialize():
     d = sys.argv[2]
     global browser
 
-    try:
-        driver_dir = os.path.dirname(os.path.realpath(__file__))
-        if b == 'firefox':
-            opt = FireOptions()
-            opt.headless = True
+    driver_dir = os.path.dirname(os.path.realpath(__file__))
+    if b == 'firefox':
+        opt = FireOptions()
+        opt.headless = True
 
-            if sys.platform.startswith('linux'):
-                path = os.path.join(driver_dir,'drivers','linux','geckodriver')
-
-                if sys.platform == 'darwin':
-                    path = os.path.join(driver_dir, 'drivers', 'mac', 'geckodriver')
-            else:
-                path = os.path.join(driver_dir,'drivers','windows','geckodriver.exe')
-
-            try:
-                if d == 'on':
-                    print("Debugging mode turned ON...")
-                    browser = webdriver.Firefox(executable_path=path,service_log_path=os.path.devnull)
-                else:
-                    raise IndexError
-            except IndexError:
-                browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=os.path.devnull)
+        if sys.platform.startswith('linux'):
+            path = os.path.join(driver_dir,'drivers','linux','geckodriver')
+        elif sys.platform == 'darwin':
+                path = os.path.join(driver_dir, 'drivers', 'mac', 'geckodriver')
         else:
-            opt = ChrOptions()
-            opt.add_argument("--log-level=3")
-            opt.headless = True
+            path = os.path.join(driver_dir,'drivers','windows','geckodriver.exe')
 
-            if sys.platform == 'linux':
-                path = os.path.join(driver_dir,'drivers','linux','chromedriver')
-
-                if sys.platform == 'darwin':
-                    path = os.path.join(driver_dir, 'drivers', 'mac', 'chromedriver')
+        try:
+            if d == 'on':
+                print("Debugging mode turned ON...")
+                browser = webdriver.Firefox(executable_path=path,service_log_path=os.path.devnull)
             else:
-                path = os.path.join(driver_dir,'drivers','windows','chromedriver.exe')
+                raise IndexError
+        except IndexError:
+            browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=os.path.devnull)
+    else:
+        opt = ChrOptions()
+        opt.add_argument("--log-level=3")
+        opt.headless = True
 
-            try:
-                if d == 'on':
-                    print("Debugging mode turned ON...")
-                    browser = webdriver.Chrome(executable_path=path,service_log_path=os.path.devnull)
-                else:
-                    raise IndexError
-            except IndexError:
-                browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=os.path.devnull)
-    except Exception as e:
-        return e
+        if sys.platform == 'linux':
+            path = os.path.join(driver_dir,'drivers','linux','chromedriver')
+        elif sys.platform == 'darwin':
+                path = os.path.join(driver_dir, 'drivers', 'mac', 'chromedriver')
+        else:
+            path = os.path.join(driver_dir,'drivers','windows','chromedriver.exe')
+
+        try:
+            if d == 'on':
+                print("Debugging mode turned ON...")
+                browser = webdriver.Chrome(executable_path=path,service_log_path=os.path.devnull)
+            else:
+                raise IndexError
+        except IndexError:
+            browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=os.path.devnull)
 
     return True
 
@@ -390,7 +385,7 @@ if __name__ == '__main__':
     try:
         if len(sys.argv) < 2 :
             if os.environ.get('HIDDEN_ID') == 'BATMAN':
-                sys.argv.append('firefox')
+                sys.argv.append('chrome')
                 sys.argv.append('off')
             else:
                 print("Usage : saavn.py [preferred_browser = 'chrome'||'firefox'] [debug_mode = 'on'||'off']")
