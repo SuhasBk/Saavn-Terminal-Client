@@ -59,6 +59,7 @@ def initialize():
     else:
         opt = ChrOptions()
         opt.add_argument("--log-level=3")
+        opt.add_argument("--window-size=1366,768")
         opt.headless = True
 
         if sys.platform == 'linux':
@@ -349,14 +350,14 @@ def navigate(song_name,gui=False):
         for i,j,k in data:
                 print(i+1,' : ',j.text,' : ',k.text)
 
-        # selects random track:
-        # browser.execute_script("arguments[0].click()",random.choice(titles))
-
         # accept cookies one time only:
         try:
             browser.find_element_by_css_selector("span[class='c-btn c-btn--senary c-btn--tiny']").click()
         except:
             pass
+
+        # selects random track:
+        # browser.execute_script("arguments[0].click()",random.choice(titles))
 
         ch = input("\nEnter your choice ('exit' to quit and 'q' to return):\n> ")
         for i,j in enumerate(titles,1):
@@ -370,7 +371,8 @@ def navigate(song_name,gui=False):
                 return
 
         time.sleep(3)
-        play_btn = browser.find_element_by_css_selector("a[class='c-btn c-btn--primary']")
+        # play_btn = browser.find_element_by_css_selector("a[class='c-btn c-btn--primary']")
+        play_btn = wait_and_find("a[class='c-btn c-btn--primary']",By.CSS_SELECTOR,browser)[0]
         play_btn.click()
         time.sleep(2)
         
