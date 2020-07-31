@@ -14,9 +14,9 @@ from subprocess import run,PIPE
 from threading import Thread
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options as ChrOptions
-from selenium.webdriver.firefox.options import Options as FireOptions
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.firefox.options import Options as FireOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -28,7 +28,7 @@ rep = 0
 
 # Colorama init function:
 init(autoreset=True)
-print(Fore.GREEN + pyfiglet.figlet_format('SAAVN TERMINAL CLIENT'))
+print(Fore.GREEN + pyfiglet.figlet_format('SAAVN CLI'))
 
 #  Start working in background while waiting for user input
 def initialize():
@@ -56,11 +56,10 @@ def initialize():
                 raise IndexError
         except IndexError:
             browser = webdriver.Firefox(executable_path=path,options=opt,service_log_path=os.path.devnull)
-    else:
-        opt = ChrOptions()
+    elif b == 'chrome':
+        opt = ChromeOptions()
         opt.add_argument("--log-level=3")
         opt.add_argument("--window-size=1366,768")
-        opt.headless = True
 
         if sys.platform == 'linux':
             path = os.path.join(driver_dir,'drivers','linux','chromedriver')
@@ -69,14 +68,13 @@ def initialize():
         else:
             path = os.path.join(driver_dir,'drivers','windows','chromedriver.exe')
 
-        try:
-            if d == 'on':
-                print("Debugging mode turned ON...")
-                browser = webdriver.Chrome(executable_path=path,service_log_path=os.path.devnull)
-            else:
-                raise IndexError
-        except IndexError:
-            browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=os.path.devnull)
+        if d == 'on':
+            print("Debugging mode turned ON...")
+        else:
+            opt.add_argument("--headless")
+    
+        browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=os.path.devnull)
+        
 
     return True
 
