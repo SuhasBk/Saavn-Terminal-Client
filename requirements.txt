@@ -1,6 +1,6 @@
-selenium==3.141.0
+selenium
 youtube-dl
-requests==2.20.1
-beautifulsoup4==4.7.1
-qrcode==6.1
+requests
+beautifulsoup4
+qrcode
 pyfiglet
