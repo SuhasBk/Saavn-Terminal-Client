@@ -1,0 +1,6 @@
+selenium
+youtube-dl
+requests
+beautifulsoup4
+qrcode
+pyfiglet
