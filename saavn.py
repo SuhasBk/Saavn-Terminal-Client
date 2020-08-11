@@ -109,12 +109,15 @@ def wait_and_find(element,selector,root=browser):
     return root.find_elements(selector,element)
 
 # fixes a bug in Saavn website which resets volume to 32% after each song
+def check_volume():
+    if browser.execute_script('return MUSIC_PLAYER.getVolume()') != 100:
+        browser.execute_script("MUSIC_PLAYER.setVolume(100);")
+
 def fix_volume_bug():
     try:
         while(browser.title):
-            if browser.execute_script('return MUSIC_PLAYER.getVolume()') != 100:
-                browser.execute_script("MUSIC_PLAYER.setVolume(100);")
-            time.sleep(30)
+            check_volume()
+            time.sleep(10)
     except:
         pass
 
@@ -141,7 +144,6 @@ def play_pause():
 # play next song
 def prev_song():
     rew = browser.find_element_by_class_name('c-player__btn-prev').find_element_by_tag_name('span')
-    # rew.click()
     browser.execute_script('arguments[0].click()',rew)
     print("\nPlaying the last song....\n")
 
