@@ -2,7 +2,7 @@
 
 A Python browser-automation CLI to search for, listen to, download and share songs from [Saavn](http://jiosaavn.com).
 
-Usage : saavn.py \[chrome | firefox]  \[on | off]*
+Usage : saavn.py -b/--browser \[chrome | firefox]  -d/--debug \[on | off]*
 
 \*debug_mode : If set to 'off', the browser will run in background. If set to 'on', the user can interact with the browser.
 
