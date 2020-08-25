@@ -9,7 +9,8 @@ import random
 import requests
 import qrcode
 import pyfiglet
-from colorama import init,Fore
+import argparse
+from colorama import init as colorama_init, Fore
 from subprocess import run,PIPE
 from threading import Thread
 from selenium import webdriver
@@ -26,14 +27,10 @@ from bs4 import BeautifulSoup
 browser = None
 rep = 0
 
-# Colorama init function:
-init(autoreset=True)
-print(Fore.GREEN + pyfiglet.figlet_format('S A A V N  C L I'))
-
 #  Start working in background while waiting for user input
 def initialize():
-    b = sys.argv[1]
-    d = sys.argv[2]
+    b = args.browser
+    d = args.debug
     global browser
 
     print("\n\aConnecting to Saavn...\n")
@@ -405,17 +402,16 @@ def navigate(song_name,gui=False):
     handler()
 
 if __name__ == '__main__':
-    try:
-        if len(sys.argv) < 2 :
-            # personal preference
-            if os.environ.get('HIDDEN_ID') == 'BATMAN':
-                sys.argv.append('firefox')
-                sys.argv.append('off')
-            # force users to choose options
-            else:
-                print("Usage : saavn.py [chrome | firefox] [on | off]")
-                sys.exit()
+    # Colorama init function:
+    colorama_init(autoreset=True)
+    print(Fore.GREEN + pyfiglet.figlet_format('S A A V N  C L I'))
 
+    parser = argparse.ArgumentParser(description="  Browser choice and debug mode")
+    parser.add_argument("-b", "--browser", type=str, metavar='', required=True, help="firefox / chrome")
+    parser.add_argument("-d", "--debug", type=str, metavar='', required=True, help="on / off")
+    args = parser.parse_args()
+
+    try:
         init = Thread(target=initialize)
         init.start()
         
