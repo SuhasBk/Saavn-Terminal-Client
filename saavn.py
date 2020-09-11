@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 import selenium
 import time
 import string
@@ -15,8 +15,9 @@ from subprocess import run,PIPE
 from threading import Thread
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from msedge.selenium_tools import Edge, EdgeOptions
 from selenium.webdriver.firefox.options import Options as FireOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -59,19 +60,40 @@ def initialize():
         opt.add_argument("--log-level=3")
         opt.add_argument("--window-size=1366,768")
 
+        if d == 'on':
+            print("Debugging mode turned ON...")
+        else:
+            opt.add_argument("--headless")
+
         if sys.platform == 'linux':
             path = os.path.join(driver_dir,'drivers','linux','chromedriver')
         elif sys.platform == 'darwin':
             path = os.path.join(driver_dir, 'drivers', 'mac', 'chromedriver')
         else:
             path = os.path.join(driver_dir,'drivers','windows','chromedriver.exe')
+    
+        browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=os.path.devnull)
+    elif b == 'edge':
+        opt = EdgeOptions()
+        opt.use_chromium = True
+
+        opt.add_argument("--log-level=3")
+        opt.add_argument("--window-size=1366,768")
+        del opt.capabilities['platform']
 
         if d == 'on':
             print("Debugging mode turned ON...")
         else:
-            opt.add_argument("--headless")
-    
-        browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=os.path.devnull)
+            opt.add_argument('--headless')
+
+        if sys.platform == 'linux':
+            path = os.path.join(driver_dir,'drivers','linux','msedgedriver')
+        elif sys.platform == 'darwin':
+            path = os.path.join(driver_dir, 'drivers', 'mac', 'msedgedriver')
+        else:
+            path = os.path.join(driver_dir,'drivers','windows','msedgedriver.exe')
+        
+        browser = Edge(executable_path=path, options=opt, service_log_path=os.path.devnull)
         
     return True
 

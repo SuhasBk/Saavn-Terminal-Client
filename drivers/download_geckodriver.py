@@ -1,10 +1,9 @@
-#!/usr/bin/python3
-
-import requests
-from bs4 import BeautifulSoup
+#!/usr/local/bin/python3
 import sys
 import os
 import struct
+import requests
+from bs4 import BeautifulSoup
 
 session = requests.Session()
 r = session.get("https://github.com/mozilla/geckodriver/releases")

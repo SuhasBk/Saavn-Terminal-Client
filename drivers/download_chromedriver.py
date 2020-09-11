@@ -1,8 +1,7 @@
-#!/usr/bin/python3
-
-import requests
+#!/usr/local/bin/python3
 import os
 import sys
+import requests
 from bs4 import BeautifulSoup
 
 if sys.platform.startswith('linux'):

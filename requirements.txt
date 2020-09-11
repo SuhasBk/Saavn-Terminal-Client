@@ -1,4 +1,5 @@
 selenium
+msedge-selenium-tools
 youtube-dl
 requests
 beautifulsoup4
