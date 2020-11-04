@@ -375,7 +375,7 @@ def navigate(song_name,gui=False):
 
     # logic to start playback:
     titles = wait_and_find('u-color-js-gray',By.CLASS_NAME,browser)[1::2][:10]
-    artists = browser.find_elements_by_xpath("//div[@class='o-snippet__item']//p[@class='u-centi u-ellipsis u-color-js-gray-alt-light']")[::2][:10]
+    artists = browser.find_elements_by_xpath("//div[@class='o-snippet__item']//p[@class='u-centi u-ellipsis u-color-js-gray-alt-light u-margin-right@sm u-margin-right-none@lg']")[::2][:10]
 
     data = zip(list(range(len(titles))), titles, artists)
 
