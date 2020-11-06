@@ -429,7 +429,7 @@ if __name__ == '__main__':
     print(Fore.GREEN + pyfiglet.figlet_format('S A A V N  C L I'))
 
     parser = argparse.ArgumentParser(description="  Browser choice and debug mode")
-    parser.add_argument("-b", "--browser", type=str, metavar='', required=True, help="firefox / chrome")
+    parser.add_argument("-b", "--browser", type=str, metavar='', required=True, help="firefox / chrome / edge")
     parser.add_argument("-d", "--debug", type=str, metavar='', required=True, help="on / off")
     args = parser.parse_args()
 
