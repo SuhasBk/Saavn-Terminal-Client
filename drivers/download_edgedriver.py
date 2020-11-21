@@ -30,7 +30,7 @@ else:
     open(zip_name, 'wb+').write(f.content)
     if this_os == 'darwin':
         print("File downloaded succesfully in mac directory...")
-        os.system(f"unzip {zip_name} && rm edgedriver*.zip && chmod +x msedgedriver && mv msedgedriver mac/")
+        os.system(f"unzip {zip_name} -d temp_driver && rm edgedriver*.zip && chmod +x ./temp_driver/* && mv temp_driver/* mac/ && rm -rf temp_driver")
         print("\nAll done! Now you can run selenium scripts without a worry!")
     else:
         print("File downloaded successfully! Extract the binary (msedgedriver.exe) from the archive and move it to .\\drivers\\windows.")
