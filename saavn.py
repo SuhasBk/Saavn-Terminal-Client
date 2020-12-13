@@ -40,12 +40,7 @@ def initialize():
         opt = FireOptions()
         opt.headless = True
 
-        if sys.platform.startswith('linux'):
-            path = os.path.join(driver_dir,'drivers','linux','geckodriver')
-        elif sys.platform == 'darwin':
-            path = os.path.join(driver_dir, 'drivers', 'mac', 'geckodriver')
-        else:
-            path = os.path.join(driver_dir,'drivers','windows','geckodriver.exe')
+        path = os.path.join(driver_dir,'drivers','linux','geckodriver')
 
         try:
             if d == 'on':
@@ -65,12 +60,7 @@ def initialize():
         else:
             opt.add_argument("--headless")
 
-        if sys.platform == 'linux':
-            path = os.path.join(driver_dir,'drivers','linux','chromedriver')
-        elif sys.platform == 'darwin':
-            path = os.path.join(driver_dir, 'drivers', 'mac', 'chromedriver')
-        else:
-            path = os.path.join(driver_dir,'drivers','windows','chromedriver.exe')
+        path = os.path.join(driver_dir,'drivers','linux','chromedriver')
     
         browser = webdriver.Chrome(executable_path=path,options=opt,service_log_path=os.path.devnull)
     elif b == 'edge':
@@ -86,12 +76,7 @@ def initialize():
         else:
             opt.add_argument('--headless')
 
-        if sys.platform == 'linux':
-            path = os.path.join(driver_dir,'drivers','linux','msedgedriver')
-        elif sys.platform == 'darwin':
-            path = os.path.join(driver_dir, 'drivers', 'mac', 'msedgedriver')
-        else:
-            path = os.path.join(driver_dir,'drivers','windows','msedgedriver.exe')
+        path = os.path.join(driver_dir,'drivers','linux','msedgedriver')
         
         browser = Edge(executable_path=path, options=opt, service_log_path=os.path.devnull)
         
